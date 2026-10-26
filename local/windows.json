@@ -1,0 +1,23 @@
+{
+  "windows": [
+    {
+      "width": 1200,
+      "height": 800,
+      "isMaximized": false,
+      "isFullScreen": false,
+      "displayBounds": {
+        "x": -1920,
+        "y": 3,
+        "width": 1920,
+        "height": 1080
+      },
+      "x": -1340,
+      "y": 222,
+      "files": [
+        "9b931ecf-fde9-44dd-acf3-15f8dc807965"
+      ],
+      "active": 0,
+      "name": "sceneEditor"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "results": [
+    "no-bridge PASS",
+    "no-diagonals PASS",
+    "same-color PASS",
+    "last-step-win PASS",
+    "last-step-fail PASS",
+    "sample-1 solution PASS",
+    "sample-2 solution PASS",
+    "sample-3 solution PASS",
+    "busy lock / reset / undo PASS"
+  ]
+}

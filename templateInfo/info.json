@@ -1,0 +1,10 @@
+{
+    "name": "2D空项目",
+    "type": 0,
+    "ord": 1,
+    "desc": "创建一个2D的空项目，该模板仅包含引擎的核心库与UI库，若使用其它引擎库，需要自行添加。",
+    "en": {
+        "name": "2D empty project",
+        "desc": "Create a 2D empty project. This template only contains the core library and UI library of the engine. If you use other engine libraries, you need to add them yourself."
+    }
+}
