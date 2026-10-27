@@ -1,0 +1,103 @@
+{
+  "source": "cyclops-v2 layered colors, DEV-0046",
+  "canvas": [
+    256,
+    256
+  ],
+  "registration": "Already baked into each 256px layer; do not apply source placement again",
+  "bodyIncludes": "whole body, arms, feet, crest, side tabs, pale belly patch",
+  "fixed": [
+    "eye",
+    "mouth",
+    "cheek-left",
+    "cheek-right"
+  ],
+  "mode": "Static only; engine visual approval pending",
+  "files": [
+    {
+      "file": "R-body.png",
+      "sha256": "76e62b0f70cc0dcec0eef038e62ade0af0717ef450770afe84b0c2c6da85ba8c"
+    },
+    {
+      "file": "R-tile.png",
+      "sha256": "72733e5bbb7ffa9e3ba326cb00366c706a626fd763373c90d745f98a5dbaaa91"
+    },
+    {
+      "file": "Y-body.png",
+      "sha256": "e27a7393677cedfc74e3a68c4db30b87c2611acab375d175b5b571a2fa734218"
+    },
+    {
+      "file": "Y-tile.png",
+      "sha256": "45764696ce3439ec60ed11210a8a3cbb7c2e95dbead8e7ca94575b3f1d49e35d"
+    },
+    {
+      "file": "B-body.png",
+      "sha256": "6c67c5a1a491007221a5c014aeb5811bcd56a6517b2b4c05abd16d39994b5234"
+    },
+    {
+      "file": "B-tile.png",
+      "sha256": "9d5951a517758ac5337708b2ec8b263a72970323440450b89aa943e87ac8555d"
+    },
+    {
+      "file": "G-body.png",
+      "sha256": "9a1440af93e7b57084c97a2d22f4bd6048ca42a00c675af2b67284ed4eed4a78"
+    },
+    {
+      "file": "G-tile.png",
+      "sha256": "f465220155ce7f551005fff449704d35174938b13b0bceeb7934e68484ed2269"
+    },
+    {
+      "file": "eye.png",
+      "sha256": "3d137cc587fd63765c9fe4636dd15ba2c6f2ad22c993d48651a433ef9254f9cf"
+    },
+    {
+      "file": "mouth.png",
+      "sha256": "8f5c356d36944f3392116d25fa1ed843bb40c3331e3c5c815bdb616fcceb84f9"
+    },
+    {
+      "file": "cheek-left.png",
+      "sha256": "3ef78aa63747324737503bd2272cb83e6d5eaac8a05ac34fa512894d6e05bd3f"
+    },
+    {
+      "file": "cheek-right.png",
+      "sha256": "8f6aa72978808d2241a54640ec179a5bbbabbed69c5ca9035fbc6b9acf3e44d3"
+    },
+    {
+      "file": "shadow.png",
+      "sha256": "17b7e0128dd1a5c4966e9fc46425d9e91bd6c4a90e81e5a78b167c03446348bf"
+    },
+    {
+      "file": "happy-eye.png",
+      "sha256": "6c7e9fe6a5c148eedbc27878038bf0b612cb65e82498fc0bfa64982e963ecab4"
+    },
+    {
+      "file": "gpu-tile-atlas.png",
+      "width": 1024,
+      "height": 256,
+      "sha256": "75f8d6b0792070eedb0de2f23fc631384970b0be9deca00d9cd0019ea40636d1"
+    },
+    {
+      "file": "gpu-body-atlas.png",
+      "width": 1024,
+      "height": 256,
+      "sha256": "20badf7d906871ee42d40ee29297e54cb4f315772ccf404858466c346cc7ba7b"
+    }
+  ],
+  "gpuAtlas": {
+    "colors": [
+      "R",
+      "Y",
+      "B",
+      "G"
+    ],
+    "cell": [
+      256,
+      256
+    ],
+    "canvas": [
+      1024,
+      256
+    ],
+    "purpose": "One engine-bound texture per part; source and target are atlas regions"
+  }
+}

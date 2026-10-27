@@ -1,0 +1,108 @@
+{
+  "source": "rabbit-v2 layered colors, DEV-0046",
+  "canvas": [
+    256,
+    256
+  ],
+  "registration": "Already baked into each 256px layer; do not apply source placement again",
+  "bodyIncludes": "whole body, arms, feet, both ears INCLUDING inner-ear shading; recolor together",
+  "fixed": [
+    "eye-left",
+    "eye-right",
+    "mouth",
+    "cheek-left",
+    "cheek-right"
+  ],
+  "mode": "Static only; engine visual approval pending",
+  "files": [
+    {
+      "file": "R-body.png",
+      "sha256": "feea09cba33e4f5253646db2645ce8161fa37b9141b05a4f11193e2def0f86a7"
+    },
+    {
+      "file": "R-tile.png",
+      "sha256": "72733e5bbb7ffa9e3ba326cb00366c706a626fd763373c90d745f98a5dbaaa91"
+    },
+    {
+      "file": "Y-body.png",
+      "sha256": "336792d6923ce09551834c0e8f341757be8edbe2941d5af3a722a24da1427c96"
+    },
+    {
+      "file": "Y-tile.png",
+      "sha256": "45764696ce3439ec60ed11210a8a3cbb7c2e95dbead8e7ca94575b3f1d49e35d"
+    },
+    {
+      "file": "B-body.png",
+      "sha256": "2291880438076a4b2c5a9662f3c503b49eb7b17dcb80b63d4de349ce54f03a9e"
+    },
+    {
+      "file": "B-tile.png",
+      "sha256": "9d5951a517758ac5337708b2ec8b263a72970323440450b89aa943e87ac8555d"
+    },
+    {
+      "file": "G-body.png",
+      "sha256": "bf22bae1cf63cf5dbaa8c049546c0f695e80d2d430232bab8fa64c197fc492a0"
+    },
+    {
+      "file": "G-tile.png",
+      "sha256": "f465220155ce7f551005fff449704d35174938b13b0bceeb7934e68484ed2269"
+    },
+    {
+      "file": "eye-left.png",
+      "sha256": "0f580cc341957f68adabca1931d87ac1010b5363e8a4dc6a635c167598d5c8c5"
+    },
+    {
+      "file": "eye-right.png",
+      "sha256": "a1504f13defa14858be9a34294c2c93c1583e68a875384d3a8680d6aabee02a4"
+    },
+    {
+      "file": "mouth.png",
+      "sha256": "4a9f6e0be6bd0a16f678687053da4d3c55aeb1fa3ca30def1dcc29a17b6e0efd"
+    },
+    {
+      "file": "cheek-left.png",
+      "sha256": "4610ea624b0febf5d7dd75cec03dd6a0c185bc5320c6fafe57a7d5db8b7e4119"
+    },
+    {
+      "file": "cheek-right.png",
+      "sha256": "19892e523b324d421228aa3176b984f0c572950b0d8261fe53c2b346712f28d7"
+    },
+    {
+      "file": "shadow.png",
+      "sha256": "17b7e0128dd1a5c4966e9fc46425d9e91bd6c4a90e81e5a78b167c03446348bf"
+    },
+    {
+      "file": "calm-eyes.png",
+      "sha256": "4525b7a8c5c5b05abce73bcb6d45aca5350b61003cb444cfdbb8f718f3948965"
+    },
+    {
+      "file": "gpu-tile-atlas.png",
+      "width": 1024,
+      "height": 256,
+      "sha256": "75f8d6b0792070eedb0de2f23fc631384970b0be9deca00d9cd0019ea40636d1"
+    },
+    {
+      "file": "gpu-body-atlas.png",
+      "width": 1024,
+      "height": 256,
+      "sha256": "a54ddd4a456e5f4e38b6ecfdf85bf1e0f58ee6c65eb81ed3e4a119572d009bb7"
+    }
+  ],
+  "gpuAtlas": {
+    "colors": [
+      "R",
+      "Y",
+      "B",
+      "G"
+    ],
+    "cell": [
+      256,
+      256
+    ],
+    "canvas": [
+      1024,
+      256
+    ],
+    "purpose": "One engine-bound texture per part; source and target are atlas regions"
+  }
+}

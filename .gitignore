@@ -1,0 +1,21 @@
+# LayaAir caches, machine-local state and generated output.
+# Already-tracked files need git rm --cached; never delete local files to untrack.
+/library/
+/local/
+/bin/js/
+/bin/libs/
+/browser/
+/tests/generated/
+/node_modules/
+*.log
+
+# Local environment values and operating-system metadata.
+.env
+.env.*
+!.env.example
+!.env.template
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Keep assets (including .meta), settings, engine declarations and bin/index.html.

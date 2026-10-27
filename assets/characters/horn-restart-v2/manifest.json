@@ -1,0 +1,113 @@
+{
+  "source": "Approved horn color study v2, DEV-0043",
+  "canvas": [
+    256,
+    256
+  ],
+  "registration": {
+    "x": 10,
+    "y": 4,
+    "width": 236,
+    "height": 236
+  },
+  "mode": "Static layered sample; no recoloring animation",
+  "files": [
+    {
+      "file": "R-body.png",
+      "sha256": "448dfd17b617af75d5012fe1a8e31eac59865da6b07df1b956b1b0d6a31c09cf"
+    },
+    {
+      "file": "R-tile.png",
+      "sha256": "72733e5bbb7ffa9e3ba326cb00366c706a626fd763373c90d745f98a5dbaaa91"
+    },
+    {
+      "file": "Y-body.png",
+      "sha256": "c0fec0b728527abba82df73c5f2eae647b91455bd06d795b2bcb6a6813a244a5"
+    },
+    {
+      "file": "Y-tile.png",
+      "sha256": "45764696ce3439ec60ed11210a8a3cbb7c2e95dbead8e7ca94575b3f1d49e35d"
+    },
+    {
+      "file": "B-body.png",
+      "sha256": "fbbe86d788662e0a0d093de69647a1242c4ff22edb5648b0a8ad1a2d6b8334e3"
+    },
+    {
+      "file": "B-tile.png",
+      "sha256": "9d5951a517758ac5337708b2ec8b263a72970323440450b89aa943e87ac8555d"
+    },
+    {
+      "file": "G-body.png",
+      "sha256": "8090458e333c13e2ee6d1bbaaf439ce3e2b53ca322352d676177d20a47a55151"
+    },
+    {
+      "file": "G-tile.png",
+      "sha256": "f465220155ce7f551005fff449704d35174938b13b0bceeb7934e68484ed2269"
+    },
+    {
+      "file": "horn-left.png",
+      "sha256": "608b9cd40aaa019e26985effadf5a1b64fe83acebedbccb8c2c83fbc659dabb7"
+    },
+    {
+      "file": "horn-right.png",
+      "sha256": "1c47b86fbe7fa8ee767aae929a1a1d01646a027a458cd57b7657703dddf8b6dd"
+    },
+    {
+      "file": "cheek-left.png",
+      "sha256": "24b58963981244263e7ea5c2a06399b5fb58837753a1dad4903bbc605d3fa33d"
+    },
+    {
+      "file": "cheek-right.png",
+      "sha256": "1a09b1e7533eabfde7a0d19ca01d3c9e936e280c9bd81bd6f2b5ad8f7795429a"
+    },
+    {
+      "file": "eye-left.png",
+      "sha256": "c7b644b1ea9944e9cbd9b1c86632b1c4be58e0ddad78b407d6f1c8bfb364d99d"
+    },
+    {
+      "file": "eye-right.png",
+      "sha256": "dba988a41a322d6fa1fb41c02953bef0b1da4ca5f57949e7157f0f28ce948bb4"
+    },
+    {
+      "file": "mouth.png",
+      "sha256": "aa541f72feff6b7116d951906e017d2b4680dbe0a3c8eaf2f0384f2c96d6212c"
+    },
+    {
+      "file": "shadow.png",
+      "sha256": "17b7e0128dd1a5c4966e9fc46425d9e91bd6c4a90e81e5a78b167c03446348bf"
+    },
+    {
+      "file": "calm-face.png",
+      "sha256": "ca1de6323e2ef8ac8dc70166206bc7c62103abfa84377b35660c3f2d8699f4bc"
+    },
+    {
+      "file": "gpu-tile-atlas.png",
+      "width": 1024,
+      "height": 256,
+      "sha256": "75f8d6b0792070eedb0de2f23fc631384970b0be9deca00d9cd0019ea40636d1"
+    },
+    {
+      "file": "gpu-body-atlas.png",
+      "width": 1024,
+      "height": 256,
+      "sha256": "49de5816df099d85b51c10666c2b31a53f5ec4e81afc0a846f4bb8e7d9c19493"
+    }
+  ],
+  "gpuAtlas": {
+    "colors": [
+      "R",
+      "Y",
+      "B",
+      "G"
+    ],
+    "cell": [
+      256,
+      256
+    ],
+    "canvas": [
+      1024,
+      256
+    ],
+    "purpose": "One engine-bound texture per part; source and target are atlas regions"
+  }
+}
