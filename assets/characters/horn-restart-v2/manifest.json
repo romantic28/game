@@ -1,48 +1,48 @@
 {
-  "source": "Approved horn color study v2, DEV-0043",
+  "character": "horn",
   "canvas": [
     256,
     256
   ],
-  "registration": {
-    "x": 10,
-    "y": 4,
-    "width": 236,
-    "height": 236
-  },
-  "mode": "Static layered sample; no recoloring animation",
+  "registration": "Baked into full-canvas PNGs; do not apply placement again",
+  "fixed": [
+    "horn-left",
+    "horn-right",
+    "cheek-left",
+    "cheek-right"
+  ],
   "files": [
-    {
-      "file": "R-body.png",
-      "sha256": "448dfd17b617af75d5012fe1a8e31eac59865da6b07df1b956b1b0d6a31c09cf"
-    },
     {
       "file": "R-tile.png",
       "sha256": "72733e5bbb7ffa9e3ba326cb00366c706a626fd763373c90d745f98a5dbaaa91"
-    },
-    {
-      "file": "Y-body.png",
-      "sha256": "c0fec0b728527abba82df73c5f2eae647b91455bd06d795b2bcb6a6813a244a5"
     },
     {
       "file": "Y-tile.png",
       "sha256": "45764696ce3439ec60ed11210a8a3cbb7c2e95dbead8e7ca94575b3f1d49e35d"
     },
     {
-      "file": "B-body.png",
-      "sha256": "fbbe86d788662e0a0d093de69647a1242c4ff22edb5648b0a8ad1a2d6b8334e3"
-    },
-    {
       "file": "B-tile.png",
       "sha256": "9d5951a517758ac5337708b2ec8b263a72970323440450b89aa943e87ac8555d"
     },
     {
-      "file": "G-body.png",
-      "sha256": "8090458e333c13e2ee6d1bbaaf439ce3e2b53ca322352d676177d20a47a55151"
-    },
-    {
       "file": "G-tile.png",
       "sha256": "f465220155ce7f551005fff449704d35174938b13b0bceeb7934e68484ed2269"
+    },
+    {
+      "file": "R-body.png",
+      "sha256": "448dfd17b617af75d5012fe1a8e31eac59865da6b07df1b956b1b0d6a31c09cf"
+    },
+    {
+      "file": "Y-body.png",
+      "sha256": "c0fec0b728527abba82df73c5f2eae647b91455bd06d795b2bcb6a6813a244a5"
+    },
+    {
+      "file": "B-body.png",
+      "sha256": "fbbe86d788662e0a0d093de69647a1242c4ff22edb5648b0a8ad1a2d6b8334e3"
+    },
+    {
+      "file": "G-body.png",
+      "sha256": "8090458e333c13e2ee6d1bbaaf439ce3e2b53ca322352d676177d20a47a55151"
     },
     {
       "file": "horn-left.png",
@@ -61,6 +61,10 @@
       "sha256": "1a09b1e7533eabfde7a0d19ca01d3c9e936e280c9bd81bd6f2b5ad8f7795429a"
     },
     {
+      "file": "calm-face.png",
+      "sha256": "ca1de6323e2ef8ac8dc70166206bc7c62103abfa84377b35660c3f2d8699f4bc"
+    },
+    {
       "file": "eye-left.png",
       "sha256": "c7b644b1ea9944e9cbd9b1c86632b1c4be58e0ddad78b407d6f1c8bfb364d99d"
     },
@@ -73,12 +77,60 @@
       "sha256": "aa541f72feff6b7116d951906e017d2b4680dbe0a3c8eaf2f0384f2c96d6212c"
     },
     {
-      "file": "shadow.png",
-      "sha256": "17b7e0128dd1a5c4966e9fc46425d9e91bd6c4a90e81e5a78b167c03446348bf"
+      "file": "blink-eye-left.png",
+      "sha256": "3e499e3994ad600e500e9b0773e472a5944bb9dc43475b040309c462c49b887c"
     },
     {
-      "file": "calm-face.png",
-      "sha256": "ca1de6323e2ef8ac8dc70166206bc7c62103abfa84377b35660c3f2d8699f4bc"
+      "file": "R-raised-body.png",
+      "sha256": "34d7328908bf12f913bd9e648616fb5a383c218ae278b0d8f87dab07e893e7dd"
+    },
+    {
+      "file": "Y-raised-body.png",
+      "sha256": "e1c8c263be6be03916b188a3079b26bc5e24d8c404c4d664e8e84e68f516432c"
+    },
+    {
+      "file": "B-raised-body.png",
+      "sha256": "982d0407030e293712024c49188701824ceecf540ae6c3bfe065fbaaba648166"
+    },
+    {
+      "file": "G-raised-body.png",
+      "sha256": "cde9faa249d377ea09d82c826323fd35ad053c9bcc453996f2e18ab1f33bbe7d"
+    },
+    {
+      "file": "R-open-body.png",
+      "sha256": "a7232f4a807b9d7422599fed822069d4f96fa3b5b6d20067175e2e41ab2bbba0"
+    },
+    {
+      "file": "Y-open-body.png",
+      "sha256": "72c259507d1bdd660b4b993bc5e820b72a34a91f12ea4f0bc07e23c368805954"
+    },
+    {
+      "file": "B-open-body.png",
+      "sha256": "f8c2445d07f6c38c8808265ef3ee5429b43d0eba0abcd58d1eaa464cf130c5b5"
+    },
+    {
+      "file": "G-open-body.png",
+      "sha256": "f819bbe2e98332b6bbd18b243f9eafca4220b4a0111f7430a4d4e81373a5e4f2"
+    },
+    {
+      "file": "R-half-body.png",
+      "sha256": "fa9e1240cdbf27a6a063a7d1a0d0d1f442e31ab901b3143da05eba21d2cc9eeb"
+    },
+    {
+      "file": "Y-half-body.png",
+      "sha256": "f861d2c278856b2d8033c1356bd18fe2f92f48b3422384832a241c5039d29fe5"
+    },
+    {
+      "file": "B-half-body.png",
+      "sha256": "b444f7276393c11e343a3f4e1f7001ef2c6e27f90e41d5dc1096682f968c40a9"
+    },
+    {
+      "file": "G-half-body.png",
+      "sha256": "5c8527004545005c5f94df0e6e77be795516d9975d692b7944a80fd7e17046f6"
+    },
+    {
+      "file": "shadow.png",
+      "sha256": "17b7e0128dd1a5c4966e9fc46425d9e91bd6c4a90e81e5a78b167c03446348bf"
     },
     {
       "file": "gpu-tile-atlas.png",

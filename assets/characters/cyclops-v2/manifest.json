@@ -1,54 +1,47 @@
 {
-  "source": "cyclops-v2 layered colors, DEV-0046",
+  "character": "cyclops",
   "canvas": [
     256,
     256
   ],
-  "registration": "Already baked into each 256px layer; do not apply source placement again",
-  "bodyIncludes": "whole body, arms, feet, crest, side tabs, pale belly patch",
+  "registration": "Baked into full-canvas PNGs; do not apply placement again",
   "fixed": [
-    "eye",
     "mouth",
     "cheek-left",
     "cheek-right"
   ],
-  "mode": "Static only; engine visual approval pending",
   "files": [
-    {
-      "file": "R-body.png",
-      "sha256": "76e62b0f70cc0dcec0eef038e62ade0af0717ef450770afe84b0c2c6da85ba8c"
-    },
     {
       "file": "R-tile.png",
       "sha256": "72733e5bbb7ffa9e3ba326cb00366c706a626fd763373c90d745f98a5dbaaa91"
-    },
-    {
-      "file": "Y-body.png",
-      "sha256": "e27a7393677cedfc74e3a68c4db30b87c2611acab375d175b5b571a2fa734218"
     },
     {
       "file": "Y-tile.png",
       "sha256": "45764696ce3439ec60ed11210a8a3cbb7c2e95dbead8e7ca94575b3f1d49e35d"
     },
     {
-      "file": "B-body.png",
-      "sha256": "6c67c5a1a491007221a5c014aeb5811bcd56a6517b2b4c05abd16d39994b5234"
-    },
-    {
       "file": "B-tile.png",
       "sha256": "9d5951a517758ac5337708b2ec8b263a72970323440450b89aa943e87ac8555d"
-    },
-    {
-      "file": "G-body.png",
-      "sha256": "9a1440af93e7b57084c97a2d22f4bd6048ca42a00c675af2b67284ed4eed4a78"
     },
     {
       "file": "G-tile.png",
       "sha256": "f465220155ce7f551005fff449704d35174938b13b0bceeb7934e68484ed2269"
     },
     {
-      "file": "eye.png",
-      "sha256": "3d137cc587fd63765c9fe4636dd15ba2c6f2ad22c993d48651a433ef9254f9cf"
+      "file": "R-body.png",
+      "sha256": "76e62b0f70cc0dcec0eef038e62ade0af0717ef450770afe84b0c2c6da85ba8c"
+    },
+    {
+      "file": "Y-body.png",
+      "sha256": "e27a7393677cedfc74e3a68c4db30b87c2611acab375d175b5b571a2fa734218"
+    },
+    {
+      "file": "B-body.png",
+      "sha256": "6c67c5a1a491007221a5c014aeb5811bcd56a6517b2b4c05abd16d39994b5234"
+    },
+    {
+      "file": "G-body.png",
+      "sha256": "9a1440af93e7b57084c97a2d22f4bd6048ca42a00c675af2b67284ed4eed4a78"
     },
     {
       "file": "mouth.png",
@@ -63,12 +56,20 @@
       "sha256": "8f6aa72978808d2241a54640ec179a5bbbabbed69c5ca9035fbc6b9acf3e44d3"
     },
     {
-      "file": "shadow.png",
-      "sha256": "17b7e0128dd1a5c4966e9fc46425d9e91bd6c4a90e81e5a78b167c03446348bf"
+      "file": "eye.png",
+      "sha256": "3d137cc587fd63765c9fe4636dd15ba2c6f2ad22c993d48651a433ef9254f9cf"
     },
     {
       "file": "happy-eye.png",
       "sha256": "6c7e9fe6a5c148eedbc27878038bf0b612cb65e82498fc0bfa64982e963ecab4"
+    },
+    {
+      "file": "blink-eye.png",
+      "sha256": "892d5c733bcb54b3e102c94066bed03c671c3d52f18252bacd9ea743d45f4bc4"
+    },
+    {
+      "file": "shadow.png",
+      "sha256": "17b7e0128dd1a5c4966e9fc46425d9e91bd6c4a90e81e5a78b167c03446348bf"
     },
     {
       "file": "gpu-tile-atlas.png",

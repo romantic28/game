@@ -1,8 +1,9 @@
+import { characterDefinitions } from './CharacterDefinitions';
 import { paintFront } from '../effects/PaintFront';
 import { CharacterMotion } from './CharacterMotion';
 import { WaveCell } from '../effects/Wave';
 import { Color } from '../gameplay/types';
-import { Species, characterRoots, visibleFixedParts, mountCharacterExpressions } from './CharacterResources';
+import { Species, characterRoots, visibleFixedParts, mountCharacterExpressions, poseBodyFile, hasBodyPoses } from './CharacterResources';
 export class CharacterStaticTile extends Laya.Sprite {
     readonly motion: CharacterMotion | null;
     private transitionPairs: {
@@ -22,17 +23,23 @@ export class CharacterStaticTile extends Laya.Sprite {
         layer: Laya.Sprite;
     }[] = [];
     private targetColor: Color | null = null;
+    private currentColor: Color;
     constructor(private species: Species, color: Color, size: number, target?: Color) {
         super();
         this.name = `${species}-static-tile`;
         this.size(size, size);
         this.mouseEnabled = false;
+        this.currentColor = color;
         this.motion = new CharacterMotion(size, species);
-        this.colorLayers(species, 'tile', color, size);
-        this.layer(species, 'shadow', ['shadow.png'], size);
-        this.colorLayers(species, 'body', color, size);
-        this.layer(species, 'fixed', visibleFixedParts(species).map(name => `${name}.png`), size);
+        for (const layer of characterDefinitions[species].layers) {
+            if (layer.kind === 'color')
+                this.colorLayers(species, layer.id, color, size);
+            else
+                this.layer(species, layer.id, layer.kind === 'fixed' ? visibleFixedParts(species).map(name => name + '.png') : ['shadow.png'], size);
+        }
         mountCharacterExpressions(species, size, this.motion);
+        if (hasBodyPoses(species))
+            this.motion.attachPose(body => this.drawBodyPose(body));
         if (this.motion)
             this.addChild(this.motion.actor);
         if (target)
@@ -43,6 +50,9 @@ export class CharacterStaticTile extends Laya.Sprite {
         this.colorParts.push({ part, layer });
     }
     beginTransition(target: Color) {
+        this.motion.stopIdle();
+        this.motion.stopBlink();
+        this.motion.restoreRestingBody();
         this.finishTransition();
         this.targetColor = target;
         for (const { part, layer: old } of this.colorParts) {
@@ -120,8 +130,18 @@ export class CharacterStaticTile extends Laya.Sprite {
             layer.graphics.drawTexture(Laya.loader.getRes(characterRoots[this.species] + this.targetColor + '-' + part + '.png') as Laya.Texture, 0, 0, this.width, this.height);
             layer.visible = true;
         }
+        this.currentColor = this.targetColor;
         this.clearTransition();
         this.targetColor = null;
+    }
+    private drawBodyPose(bodyPart: string) {
+        const body = this.colorParts.find(entry => entry.part === 'body');
+        if (!body) return;
+        const file = poseBodyFile(this.species, this.currentColor, bodyPart);
+        const texture = Laya.loader.getRes(characterRoots[this.species] + file) as Laya.Texture;
+        if (!texture) throw new Error('Missing character pose: ' + file);
+        body.layer.graphics.clear();
+        body.layer.graphics.drawTexture(texture, 0, 0, this.width, this.height);
     }
     private clearTransition() {
         for (const pair of this.transitionPairs) {
@@ -149,12 +169,14 @@ export class CharacterStaticTile extends Laya.Sprite {
                 throw new Error(`Missing static character resource: ${characterRoots[species] + file}`);
             layer.graphics.drawTexture(texture, 0, 0, size, size);
         }
-        if (this.motion && (name === 'body' || name === 'fixed' || name === 'body-target'))
+        if (characterDefinitions[species].layers.find(layer => layer.id === name.replace(/-target$/, ''))?.parent === 'actor')
             this.motion.actor.addChild(layer);
         else
             this.addChild(layer);
         if (name === 'shadow')
             this.motion?.attachShadow(layer);
+        if (name === 'fixed')
+            this.motion.attachFaceLayer(layer);
         return layer;
     }
 }

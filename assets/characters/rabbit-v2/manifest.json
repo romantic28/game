@@ -1,59 +1,47 @@
 {
-  "source": "rabbit-v2 layered colors, DEV-0046",
+  "character": "rabbit",
   "canvas": [
     256,
     256
   ],
-  "registration": "Already baked into each 256px layer; do not apply source placement again",
-  "bodyIncludes": "whole body, arms, feet, both ears INCLUDING inner-ear shading; recolor together",
+  "registration": "Baked into full-canvas PNGs; do not apply placement again",
   "fixed": [
-    "eye-left",
-    "eye-right",
     "mouth",
     "cheek-left",
     "cheek-right"
   ],
-  "mode": "Static only; engine visual approval pending",
   "files": [
-    {
-      "file": "R-body.png",
-      "sha256": "feea09cba33e4f5253646db2645ce8161fa37b9141b05a4f11193e2def0f86a7"
-    },
     {
       "file": "R-tile.png",
       "sha256": "72733e5bbb7ffa9e3ba326cb00366c706a626fd763373c90d745f98a5dbaaa91"
-    },
-    {
-      "file": "Y-body.png",
-      "sha256": "336792d6923ce09551834c0e8f341757be8edbe2941d5af3a722a24da1427c96"
     },
     {
       "file": "Y-tile.png",
       "sha256": "45764696ce3439ec60ed11210a8a3cbb7c2e95dbead8e7ca94575b3f1d49e35d"
     },
     {
-      "file": "B-body.png",
-      "sha256": "2291880438076a4b2c5a9662f3c503b49eb7b17dcb80b63d4de349ce54f03a9e"
-    },
-    {
       "file": "B-tile.png",
       "sha256": "9d5951a517758ac5337708b2ec8b263a72970323440450b89aa943e87ac8555d"
-    },
-    {
-      "file": "G-body.png",
-      "sha256": "bf22bae1cf63cf5dbaa8c049546c0f695e80d2d430232bab8fa64c197fc492a0"
     },
     {
       "file": "G-tile.png",
       "sha256": "f465220155ce7f551005fff449704d35174938b13b0bceeb7934e68484ed2269"
     },
     {
-      "file": "eye-left.png",
-      "sha256": "0f580cc341957f68adabca1931d87ac1010b5363e8a4dc6a635c167598d5c8c5"
+      "file": "R-body.png",
+      "sha256": "feea09cba33e4f5253646db2645ce8161fa37b9141b05a4f11193e2def0f86a7"
     },
     {
-      "file": "eye-right.png",
-      "sha256": "a1504f13defa14858be9a34294c2c93c1583e68a875384d3a8680d6aabee02a4"
+      "file": "Y-body.png",
+      "sha256": "336792d6923ce09551834c0e8f341757be8edbe2941d5af3a722a24da1427c96"
+    },
+    {
+      "file": "B-body.png",
+      "sha256": "2291880438076a4b2c5a9662f3c503b49eb7b17dcb80b63d4de349ce54f03a9e"
+    },
+    {
+      "file": "G-body.png",
+      "sha256": "bf22bae1cf63cf5dbaa8c049546c0f695e80d2d430232bab8fa64c197fc492a0"
     },
     {
       "file": "mouth.png",
@@ -68,12 +56,72 @@
       "sha256": "19892e523b324d421228aa3176b984f0c572950b0d8261fe53c2b346712f28d7"
     },
     {
-      "file": "shadow.png",
-      "sha256": "17b7e0128dd1a5c4966e9fc46425d9e91bd6c4a90e81e5a78b167c03446348bf"
-    },
-    {
       "file": "calm-eyes.png",
       "sha256": "4525b7a8c5c5b05abce73bcb6d45aca5350b61003cb444cfdbb8f718f3948965"
+    },
+    {
+      "file": "eye-left.png",
+      "sha256": "0f580cc341957f68adabca1931d87ac1010b5363e8a4dc6a635c167598d5c8c5"
+    },
+    {
+      "file": "eye-right.png",
+      "sha256": "a1504f13defa14858be9a34294c2c93c1583e68a875384d3a8680d6aabee02a4"
+    },
+    {
+      "file": "blink-eyes.png",
+      "sha256": "9ed7a5e677b19e0495f34e5d279a5ea6c26d24ebf8e556162a06113f75565b5b"
+    },
+    {
+      "file": "R-air-body.png",
+      "sha256": "3814031231f916882e1c5d60b223fbd776e378714d8bebfadfc389cf46169175"
+    },
+    {
+      "file": "Y-air-body.png",
+      "sha256": "036445ee4d27c4a2e9ee1cd822a04ad6a7c360b4afa66e8f8b73938c8c8be7ae"
+    },
+    {
+      "file": "B-air-body.png",
+      "sha256": "38ecb53236221ee8745bba041c218d426a1378037afb210d8097a09aa2d9726b"
+    },
+    {
+      "file": "G-air-body.png",
+      "sha256": "5029520b7375a3e50a111d2f1ebf29a09254e7e704c0002ee3599c9eda791f35"
+    },
+    {
+      "file": "R-takeoff-body.png",
+      "sha256": "8fd8e70d9b94c46d0875f34e8b135d760dfc6888a6a3c97339792d9b120a7a2c"
+    },
+    {
+      "file": "Y-takeoff-body.png",
+      "sha256": "514349618ae67e36ff8fb8806cffe443ada15453aa1c4cdf28ea0a62f4a1902f"
+    },
+    {
+      "file": "B-takeoff-body.png",
+      "sha256": "75a02bf6c35f51e023880443e67ffce9f6dc456d2266e3db03208993c1b50ca5"
+    },
+    {
+      "file": "G-takeoff-body.png",
+      "sha256": "a486072f190838ea78fcb37e6a4d60062e3bcecc9f231cb41b8a895053ab2bfa"
+    },
+    {
+      "file": "R-land-body.png",
+      "sha256": "d310664fc61c6156e8244da6710492456debdc9ad53925ac0ba73a11953e35c2"
+    },
+    {
+      "file": "Y-land-body.png",
+      "sha256": "00371f78b3fd2645ffd61e421e24e667d43a5f7c886fa1283196cf0467727a27"
+    },
+    {
+      "file": "B-land-body.png",
+      "sha256": "d3e292e3df85d5ac50343d2d488610dacd5c9d338047bb1fe37eb7f999ec54a9"
+    },
+    {
+      "file": "G-land-body.png",
+      "sha256": "5f7e40218c73146371998ea458fd1b1638bc3c2ccba28151beca3e36d229ed9c"
+    },
+    {
+      "file": "shadow.png",
+      "sha256": "17b7e0128dd1a5c4966e9fc46425d9e91bd6c4a90e81e5a78b167c03446348bf"
     },
     {
       "file": "gpu-tile-atlas.png",

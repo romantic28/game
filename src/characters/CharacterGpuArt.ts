@@ -1,7 +1,8 @@
+import { characterDefinitions, characterColors } from './CharacterDefinitions';
 import { WaveCell } from '../effects/Wave';
 import { CharacterMotion } from './CharacterMotion';
 import { Color } from '../gameplay/types';
-import { Species, characterRoots, visibleFixedParts, mountCharacterExpressions } from './CharacterResources';
+import { Species, characterRoots, visibleFixedParts, mountCharacterExpressions, poseBodyFile, hasBodyPoses } from './CharacterResources';
 const shaderName = 'MonsterPartyGpuDye';
 const vs = `
 #define SHADER_NAME MonsterPartyGpuDyeVS
@@ -60,7 +61,7 @@ function register() {
     registered = true;
 }
 function atlasRect(texture: Laya.Texture, color: Color) {
-    const uv = texture.uv, index = (['R', 'Y', 'B', 'G'] as Color[]).indexOf(color);
+    const uv = texture.uv, index = characterColors.indexOf(color);
     if (texture.width !== 1024 || texture.height !== 256 || texture.offsetX || texture.offsetY)
         throw new Error('GPU染色图集需要完整1024×256画布');
     if (uv[0] !== uv[6] || uv[1] !== uv[3] || uv[2] !== uv[4] || uv[5] !== uv[7])
@@ -94,7 +95,8 @@ export class CharacterGpuTile extends Laya.Sprite {
         this.vertices = new Float32Array([0, 0, size, 0, size, size, 0, size]);
         this.motion = new CharacterMotion(size, species);
         const root = characterRoots[species];
-        for (const part of ['tile', 'shadow', 'body', 'fixed']) {
+        for (const definition of characterDefinitions[species].layers) {
+            const part = definition.id;
             const layer = new Laya.Sprite();
             layer.size(size, size);
             layer.mouseEnabled = false;
@@ -123,18 +125,25 @@ export class CharacterGpuTile extends Laya.Sprite {
                     layer.graphics.drawTriangles(atlas, 0, 0, this.vertices, this.uvs, this.indices);
                 }
             }
-            if (this.motion && (part === 'body' || part === 'fixed'))
+            if (definition.parent === 'actor')
                 this.motion.actor.addChild(layer);
             else
                 this.addChild(layer);
             if (part === 'shadow')
                 this.motion?.attachShadow(layer);
+            if (part === 'fixed')
+                this.motion.attachFaceLayer(layer);
         }
         mountCharacterExpressions(species, size, this.motion);
+        if (hasBodyPoses(species))
+            this.motion.attachPose(body => this.drawBodyPose(body));
         if (this.motion)
             this.addChild(this.motion.actor);
     }
     beginTransition(target: Color, cell: WaveCell) {
+        this.motion.stopIdle();
+        this.motion.stopBlink();
+        this.motion.restoreRestingBody();
         this.targetColor = target;
         const center = cell.direction === 'center', length = Math.hypot(cell.dx, cell.dy) || 1;
         this.mode = center ? 2 : 0;
@@ -164,6 +173,17 @@ export class CharacterGpuTile extends Laya.Sprite {
             layer.graphics.clear();
             layer.graphics.drawTexture(texture, 0, 0, this.width, this.height);
         }
+    }
+    private drawBodyPose(bodyPart: string) {
+        const body = this.colorLayers.find(entry => entry.part === 'body');
+        if (!body) return;
+        const file = poseBodyFile(this.species, this.currentColor, bodyPart);
+        const texture = Laya.loader.getRes(characterRoots[this.species] + file) as Laya.Texture;
+        if (!texture) throw new Error('Missing character pose: ' + file);
+        // Poses occur after finishTransition; dye always uses the original atlas.
+        body.layer.material = null;
+        body.layer.graphics.clear();
+        body.layer.graphics.drawTexture(texture, 0, 0, this.width, this.height);
     }
     destroy(destroyChild = true) {
         super.destroy(destroyChild);

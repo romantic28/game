@@ -1,5 +1,5 @@
+import { characterDefinitions } from '../characters/CharacterDefinitions';
 import { CharacterGpuTile } from '../characters/CharacterGpuArt';
-import { bounceDuration, groupResponseDuration } from '../characters/CharacterMotion';
 import { Rules } from '../gameplay/Rules';
 import { levels } from '../gameplay/SampleLevels';
 import { Color, Board } from '../gameplay/types';
@@ -7,8 +7,12 @@ import { planWave, waveProgress, WaveCell } from '../effects/Wave';
 import { paintFront } from '../effects/PaintFront';
 import { gridMask, gridSurface } from './GridAppearance';
 import { CharacterStaticTile } from '../characters/CharacterStaticArt';
-import { staticArtReady, Species, speciesList } from '../characters/CharacterResources';
+import { CharacterMotion, idleUpdateInterval } from '../characters/CharacterMotion';
+import { staticArtReady, Species, speciesList, hasBlink } from '../characters/CharacterResources';
 const colors: Record<Color, string> = { R: '#ff4d46', Y: '#f7f58c', B: '#73aeff', G: '#5bcc7f' };
+// Initial sample threshold, subject to user feedback; it never changes the dye region.
+const largeMergeSize = 12;
+const victoryPreviewDelay = 500;
 const names: Record<Color, string> = { R: '红', Y: '黄', B: '蓝', G: '绿' };
 interface Tile {
     character?: CharacterStaticTile | CharacterGpuTile;
@@ -26,10 +30,24 @@ export class PartyView extends Laya.Sprite {
     private inspecting = false;
     private gpuCharacters = true;
     private motionEnabled = true;
+    private idleEnabled = true;
+    private blinkEnabled = true;
+    private nextIdleUpdate = 0;
+    private nextBlinkAt = 0;
+    private blinkCandidates: CharacterMotion[] = [];
+    private get idleWorkPending() {
+        return this.characters && this.motionEnabled && this.rules.result === 'playing' &&
+            (this.idleEnabled || (this.blinkEnabled && this.blinkCandidates.length > 0));
+    }
     private characters = staticArtReady();
     private species: Species | 'mixed' = 'mixed';
     private movesText: Laya.Text;
     private statusText: Laya.Text;
+    private victory: { start: number; phase: 'cheer' | 'hold' | 'photo'; cheerDuration: number } | null = null;
+    private photoFrame: Laya.Sprite | null = null;
+    private get inputLocked() {
+        return this.rules.busy || !!(this.victory && this.victory.phase !== 'photo');
+    }
     private colorButtons: Partial<Record<Color, Laya.Sprite>> = {};
     private animation: {
         old: Board;
@@ -40,6 +58,8 @@ export class PartyView extends Laya.Sprite {
         groupStart: number;
         responders: number[][];
         groupStarted: boolean;
+        largeMerge: boolean;
+        finalGroup: boolean;
     } | null = null;
     constructor() {
         super();
@@ -106,7 +126,7 @@ export class PartyView extends Laya.Sprite {
         return { paint, surface, pulse };
     }
     private toggleCharacters() {
-        if (this.rules.busy || !staticArtReady())
+        if (this.inputLocked || !staticArtReady())
             return;
         this.characters = !this.characters;
         this.refreshUI();
@@ -121,6 +141,11 @@ export class PartyView extends Laya.Sprite {
     private cancelAnimation() {
         Laya.timer.clearAll(this);
         this.animation = null;
+        this.victory = null;
+        this.photoFrame?.destroy(true);
+        this.photoFrame = null;
+        this.nextIdleUpdate = 0;
+        this.nextBlinkAt = 0;
         for (const row of this.tiles)
             for (const tile of row)
                 tile.character?.motion?.reset();
@@ -142,17 +167,33 @@ export class PartyView extends Laya.Sprite {
         this.refreshUI();
     }
     cell(r: number, c: number) {
-        if (this.rules.busy)
+        if (this.inputLocked)
             return;
         const old = this.rules.board.map(row => row.slice());
         if (!this.rules.start(r, c))
             return;
+        // Keep the complete dye wave on the original registered body coordinates.
+        for (const row of this.tiles)
+            for (const tile of row)
+                if (tile.character?.motion) {
+                    tile.character.motion.stopIdle();
+                    tile.character.motion.stopBlink();
+                }
+        this.nextBlinkAt = 0;
         const cells = planWave(this.rules.changed, r, c);
         const changed = new Set(this.rules.changed.map(([y, x]) => `${y},${x}`));
-        // Original target-color teammates respond once, but never enter the dye wave.
-        const responders = this.motionEnabled ? this.rules.team.filter(([y, x]) => !changed.has(`${y},${x}`) && !!this.tiles[y][x].character?.motion) : [];
-        const groupStart = Math.max(...cells.map(v => v.start + v.duration + (this.motionEnabled && this.tiles[v.r][v.c].character?.motion ? bounceDuration : 0)));
-        this.animation = { old, cells, start: Laya.timer.currTimer, end: groupStart + (responders.length ? groupResponseDuration : 0), color: this.rules.selected, groupStart, responders, groupStarted: false };
+        // Original teammates never enter the dye wave; large merges add a final whole-team response.
+        let responders = this.motionEnabled ? this.rules.team.filter(([y, x]) => !changed.has(`${y},${x}`) && !!this.tiles[y][x].character?.motion) : [];
+        const largeMerge = responders.length > 0 && this.rules.team.length >= largeMergeSize;
+        if (largeMerge)
+            responders = this.rules.team.filter(([y, x]) => !!this.tiles[y][x].character?.motion);
+        const finalGroup = largeMerge && this.rules.board.every(row => row.every(color => color === this.rules.level.target));
+        const groupStart = Math.max(...cells.map(cell => {
+            const motion = this.tiles[cell.r][cell.c].character?.motion;
+            const actionDuration = this.motionEnabled ? motion?.bounceDuration || 0 : 0;
+            return cell.start + cell.duration + actionDuration;
+        }));
+        this.animation = { old, cells, start: Laya.timer.currTimer, end: groupStart + this.responseDuration(responders), color: this.rules.selected, groupStart, responders, groupStarted: false, largeMerge, finalGroup };
         for (const cell of cells) {
             const tile = this.tiles[cell.r][cell.c];
             tile.progress = -1;
@@ -169,9 +210,30 @@ export class PartyView extends Laya.Sprite {
                 if (tile.character?.motion?.updateExpression(now))
                     expressionPending = true;
             }
+        if (this.victory) {
+            this.tickVictory(now);
+            return;
+        }
         const animation = this.animation;
         if (!animation) {
-            if (!expressionPending)
+            if (this.idleWorkPending) {
+                if (this.idleEnabled && now >= this.nextIdleUpdate) {
+                    this.nextIdleUpdate = now + idleUpdateInterval;
+                    const columns = this.tiles[0].length;
+                    for (let r = 0; r < this.tiles.length; r++)
+                        for (let c = 0; c < columns; c++)
+                            this.tiles[r][c].character?.motion?.updateIdle(now, r * columns + c);
+                }
+                if (this.blinkEnabled && this.blinkCandidates.length) {
+                    if (this.nextBlinkAt && now >= this.nextBlinkAt) {
+                        const start = Math.floor(Math.random() * this.blinkCandidates.length);
+                        for (let i = 0; i < this.blinkCandidates.length; i++)
+                            if (this.blinkCandidates[(start + i) % this.blinkCandidates.length].tryBlink(now)) break;
+                        this.nextBlinkAt = 0;
+                    }
+                    if (!this.nextBlinkAt) this.nextBlinkAt = now + 2000 + Math.random() * 2000;
+                }
+            } else if (!expressionPending)
                 Laya.timer.clear(this, this.tickAnimation);
             return;
         }
@@ -181,7 +243,8 @@ export class PartyView extends Laya.Sprite {
                 continue;
             const tile = this.tiles[cell.r][cell.c], p = waveProgress(elapsed, cell);
             if (tile.progress === p) {
-                if (p >= 1 && this.motionEnabled)
+                // Once the shared group starts, do not repeatedly settle its newly dyed members.
+                if (p >= 1 && this.motionEnabled && !animation.groupStarted)
                     tile.character?.motion?.update(elapsed - cell.start - cell.duration);
                 continue;
             }
@@ -197,9 +260,13 @@ export class PartyView extends Laya.Sprite {
                     tile.character.setTransitionProgress(p);
                 else
                     tile.character.setTransitionProgress(p, cell);
+                // The face responds during the dye, while the body stays registered.
+                // Only renew on changing progress; completed cells use the bounded bounce.
+                if (this.motionEnabled)
+                    tile.character.motion?.respondToDye(p);
                 if (p >= 1) {
                     tile.character.finishTransition();
-                    if (this.motionEnabled)
+                    if (this.motionEnabled && !animation.groupStarted)
                         tile.character.motion?.update(elapsed - cell.start - cell.duration);
                 }
                 continue; // Hidden grid labels, surfaces and pulses do not animate in character mode.
@@ -215,17 +282,76 @@ export class PartyView extends Laya.Sprite {
         if (animation.responders.length && elapsed >= animation.groupStart) {
             if (!animation.groupStarted) {
                 animation.groupStarted = true;
-                this.statusText.text = '新队伍集合中…';
+                this.statusText.text = animation.largeMerge ? '大队伍一起集合…' : '新队伍集合中…';
             }
-            for (const [r, c] of animation.responders)
-                this.tiles[r][c].character?.motion?.respondToGroup(elapsed - animation.groupStart);
+            for (const [r, c] of animation.responders) {
+                const motion = this.tiles[r][c].character?.motion;
+                if (animation.finalGroup)
+                    motion?.respondToVictory(elapsed - animation.groupStart);
+                else
+                    motion?.respondToGroup(elapsed - animation.groupStart);
+            }
         }
         if (elapsed >= animation.end) {
             // The body action ends now; the face may linger without locking input.
             this.animation = null;
             this.rules.finish();
+            if (this.rules.result === 'win') {
+                const cheerDuration = this.responseDuration(this.rules.team);
+                if (animation.finalGroup) {
+                    // This whole-team response already is the victory cheer: keep it continuous.
+                    for (const row of this.tiles)
+                        for (const tile of row)
+                            tile.character?.motion?.holdForPhoto();
+                    this.victory = { start: now - cheerDuration, phase: 'hold', cheerDuration };
+                } else {
+                    this.victory = { start: now, phase: 'cheer', cheerDuration };
+                }
+            }
             this.updateStatus();
         }
+    }
+    private responseDuration(cells: number[][]) {
+        if (!this.motionEnabled) return 0;
+        let duration = 0;
+        for (const [r, c] of cells)
+            duration = Math.max(duration, this.tiles[r][c].character?.motion?.groupDuration || 0);
+        return duration;
+    }
+    private tickVictory(now: number) {
+        const victory = this.victory;
+        if (!victory) return;
+        const elapsed = now - victory.start;
+        const animate = this.characters && this.motionEnabled;
+        if (animate && elapsed < victory.cheerDuration) {
+            for (const row of this.tiles)
+                for (const tile of row)
+                    tile.character?.motion?.respondToVictory(elapsed);
+            return;
+        }
+        if (victory.phase === 'cheer') {
+            if (animate)
+                for (const row of this.tiles)
+                    for (const tile of row)
+                        tile.character?.motion?.holdForPhoto();
+            victory.phase = 'hold';
+        }
+        if (animate && elapsed < victoryPreviewDelay) return;
+        if (victory.phase !== 'photo') {
+            victory.phase = 'photo';
+            // Keep the actual board and characters; this is a framed view, not an exported PNG.
+            const rows = this.tiles.length, cols = this.tiles[0].length;
+            const first = this.tiles[0][0].sprite, last = this.tiles[rows - 1][cols - 1].sprite;
+            const frame = new Laya.Sprite();
+            frame.name = 'victory-photo-frame';
+            frame.mouseEnabled = false;
+            frame.graphics.drawRoundRect(first.x - 9, first.y - 9, last.x + last.width - first.x + 18, last.y + last.height - first.y + 18, 12, 12, 12, 12, null, '#fff5dd', 3);
+            this.photoFrame = frame;
+            this.addChild(frame);
+            this.updateStatus();
+        }
+        // Freeze the same board in its final pose; no background expression timers remain.
+        Laya.timer.clear(this, this.tickAnimation);
     }
     // A directional, slightly uneven paint front. Draws only inside the original tile bounds.
     private paintTransition(tile: Tile, oldColor: string, newColor: string, p: number, cell: WaveCell) {
@@ -242,11 +368,11 @@ export class PartyView extends Laya.Sprite {
     }
     private updateStatus() {
         this.movesText.text = `目标：${names[this.rules.level.target]}色   ·   剩余 ${this.rules.moves} 步`;
-        this.statusText.text = this.rules.busy ? '变装接力中…' : this.rules.result === 'win' ? '成功！全员完成变装' : this.rules.result === 'fail' ? '步数用完 · 可撤销或重来' : '先选颜色，再点任意同色区域';
+        this.statusText.text = this.victory ? (this.victory.phase === 'photo' ? '合照取景预览 · 重来或切样板继续' : '成功！全员集合留念…') : this.inputLocked ? '变装接力中…' : this.rules.result === 'win' ? '成功！全员完成变装' : this.rules.result === 'fail' ? '步数用完 · 可撤销或重来' : '先选颜色，再点任意同色区域';
         this.statusText.color = this.rules.result === 'fail' ? '#ffb3b3' : '#e5edff';
     }
     private selectColor(color: Color) {
-        if (this.rules.busy || this.rules.selected === color)
+        if (this.inputLocked || this.rules.selected === color)
             return;
         this.rules.select(color);
         for (const key of ['R', 'Y', 'B', 'G'] as Color[]) {
@@ -259,17 +385,21 @@ export class PartyView extends Laya.Sprite {
         }
     }
     private refreshUI(board: Board = this.rules.board) {
+        this.cancelAnimation();
         this.colorButtons = {};
         while (this.numChildren)
             this.getChildAt(0).destroy(true);
         this.tiles = [];
+        this.blinkCandidates = [];
         this.graphics.clear();
         this.graphics.drawRect(0, 0, 600, 1000, '#171d36');
         this.text('染色玩法开发预览', 20, 30, 560, 36);
-        this.text(this.characters ? `V0.2 / 三物种 · ${this.gpuCharacters ? 'GPU' : '遮罩'} 接力染色` : 'V0.2 / 纯格子对照 · 可操作', 20, 82, 560, 18, '#a8b4d5');
+        this.text(this.characters ? `V0.2 / ${speciesList.length === 3 ? '三物种' : speciesList.length + '物种'} · ${this.gpuCharacters ? 'GPU' : '遮罩'} 接力染色` : 'V0.2 / 纯格子对照 · 可操作', 20, 82, 560, 18, '#a8b4d5');
         levels.forEach((l, i) => this.button(`样板 ${i + 1}`, 24 + i * 190, 132, 172, 48, i === this.index ? '#6575b7' : '#303951', () => this.load(i)));
-        (['mixed', ...speciesList] as (Species | 'mixed')[]).forEach((species, i) => this.button({ mixed: '三物种混排', horn: '小角怪', cyclops: '独眼怪', rabbit: '兔耳怪' }[species], 24 + i * 140, 190, 132, 34, '#343f60', () => {
-            if (this.rules.busy || !staticArtReady())
+        const speciesOptions: (Species | 'mixed')[] = ['mixed', ...speciesList];
+        const speciesButtonWidth = Math.min(132, (552 - (speciesOptions.length - 1) * 8) / speciesOptions.length);
+        speciesOptions.forEach((species, i) => this.button(species === 'mixed' ? (speciesList.length === 3 ? '三物种混排' : '多物种混排') : characterDefinitions[species].name, 24 + i * (speciesButtonWidth + 8), 190, speciesButtonWidth, 34, '#343f60', () => {
+            if (this.inputLocked || !staticArtReady())
                 return;
             this.species = species;
             this.characters = true;
@@ -282,18 +412,33 @@ export class PartyView extends Laya.Sprite {
         this.button(this.characters ? '纯格子对照' : staticArtReady() ? '角色棋盘' : '角色资源未就绪', 318, 354, 250, 36, '#343f60', () => this.toggleCharacters());
         if (this.characters)
             this.button(this.gpuCharacters ? 'GPU 染色 · 切换遮罩' : '遮罩染色 · 切换 GPU', 160, 764, 280, 32, '#343f60', () => {
-                if (this.rules.busy)
+                if (this.inputLocked)
                     return;
                 this.gpuCharacters = !this.gpuCharacters;
                 this.refreshUI();
             }, false, true, 18);
         if (this.characters)
-            this.button(this.motionEnabled ? '角色动作：开' : '角色动作：关', 170, 970, 260, 28, '#343f60', () => {
-                if (this.rules.busy)
+            this.button(this.motionEnabled ? '角色动作：开' : '角色动作：关', 24, 970, 176, 28, '#343f60', () => {
+                if (this.inputLocked)
                     return;
                 this.motionEnabled = !this.motionEnabled;
                 this.refreshUI();
             }, false, true, 18);
+        if (this.characters)
+            this.button(this.motionEnabled && this.idleEnabled ? '轻呼吸：开' : '轻呼吸：关', 212, 970, 176, 28, '#343f60', () => {
+                if (this.inputLocked || !this.motionEnabled)
+                    return;
+                this.idleEnabled = !this.idleEnabled;
+                this.refreshUI();
+            }, false, true, 18);
+        if (this.characters) {
+            const blinkSupported = (this.species === 'mixed' ? speciesList : [this.species]).some(hasBlink);
+            this.button(!blinkSupported ? '眨眼：无' : this.motionEnabled && this.blinkEnabled ? '眨眼：开' : '眨眼：关', 400, 970, 176, 28, '#343f60', () => {
+                if (this.inputLocked || !this.motionEnabled || !blinkSupported) return;
+                this.blinkEnabled = !this.blinkEnabled;
+                this.refreshUI();
+            }, false, true, 18);
+        }
         const rows = board.length, cols = board[0].length, size = Math.min(112, 520 / cols, 320 / rows), left = (600 - cols * size) / 2, top = 400 + (320 - rows * size) / 2;
         board.forEach((row, r) => {
             this.tiles[r] = [];
@@ -318,6 +463,8 @@ export class PartyView extends Laya.Sprite {
                     else
                         character = new CharacterStaticTile(species, color, size - 3);
                     sprite.addChild(character);
+                    if (hasBlink(species) && character.motion)
+                        this.blinkCandidates.push(character.motion);
                 }
                 this.tiles[r][c] = { sprite, label, character, progress: -1, ...effect };
             });
@@ -328,11 +475,13 @@ export class PartyView extends Laya.Sprite {
             this.colorButtons[c] = this.button(names[c], 36 + i * 135, 810, 120, 58, colors[c], () => this.selectColor(c), this.rules.selected === c);
         });
         this.button('撤销', 50, 903, 230, 56, '#343f60', () => {
-            if (this.rules.busy)
+            if (this.inputLocked)
                 return;
             this.rules.undo();
             this.refreshUI();
         });
         this.button('重来', 320, 903, 230, 56, '#343f60', () => this.restart());
+        if (this.idleWorkPending)
+            Laya.timer.frameLoop(1, this, this.tickAnimation);
     }
 }
