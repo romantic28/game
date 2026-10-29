@@ -8,8 +8,6 @@ V0.1 已完成，用户已于 2026-10-26 明确审查通过。引擎固定 LayaA
 
 使用 LayaAir 3.2.9 打开 `MonsterParty.laya`，编译并启动预览。入口场景为 `assets/Scene.ls`，启动组件为 `src/Main.ts`。
 
-独立浏览器产物位于 `browser/`，可用静态 HTTP 服务托管该目录。安装 Python 的环境可在仓库根目录执行 `python -m http.server 18081 --bind 127.0.0.1 --directory browser`，然后打开 http://127.0.0.1:18081 。此命令是运行建议，本次未重新执行。
-
 `bin/index.html` 是 IDE 专用模板，必须保留引擎库、bundleJS、indexJS 的模板占位符；独立网页不得覆盖它。
 
 ## 已实现
@@ -26,5 +24,6 @@ V0.1 已完成，用户已于 2026-10-26 明确审查通过。引擎固定 LayaA
 
 ## 仓库边界
 
-外层 `monster-party/docs`、`tools`、`references`、游戏方案与概念图目前不在本仓库中。本次补充仓库内交付文档；未迁移 Git 根目录，也未同步外层辅助构建/测试工具。已有 browser 产物可用于试玩，重新生成产物及重跑自动测试仍需外层工具，不能将本仓库描述为已包含完整辅助工具链。
+外层 `monster-party/docs`、`tools`、`references`、游戏方案与概念图目前不在本仓库中；本仓库只保留 LayaAir IDE 工程及交付文档。自动测试脚本仍在外层工具目录。
+
 
